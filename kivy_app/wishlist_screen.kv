@@ -1,0 +1,21 @@
+<WishlistScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: dp(10)
+        padding: dp(20)
+
+        Label:
+            text: "Your Wishlist"
+            font_size: '24sp'
+
+        Button:
+            text: "Add to Wishlist"
+            on_release: print("Add to Wishlist")
+        
+        Button:
+            text: "View Wishlist"
+            on_release: print("View Wishlist")
+        
+        Button:
+            text: "Back"
+            on_release: app.root.current = "profile_screen"

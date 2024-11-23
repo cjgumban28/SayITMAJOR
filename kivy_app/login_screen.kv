@@ -1,0 +1,26 @@
+<LoginScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: dp(10)
+        padding: dp(20)
+
+        Label:
+            text: "Login"
+            font_size: '24sp'
+        
+        TextInput:
+            hint_text: "Username"
+            multiline: False
+        
+        TextInput:
+            hint_text: "Password"
+            password: True
+            multiline: False
+
+        Button:
+            text: "Login"
+            on_release: app.root.current = "profile_screen"
+        
+        Button:
+            text: "Register"
+            on_release: app.root.current = "register_screen"

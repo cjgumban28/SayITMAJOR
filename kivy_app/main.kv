@@ -1,0 +1,77 @@
+ScreenManager:
+    LoginScreen:
+    RegisterScreen:
+    ProfileScreen:
+
+<LoginScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 10
+        spacing: 10
+
+        Label:
+            text: "Login"
+            font_size: 24
+
+        TextInput:
+            id: username
+            hint_text: "Username"
+            multiline: False
+
+        TextInput:
+            id: password
+            hint_text: "Password"
+            password: True
+            multiline: False
+
+        Button:
+            text: "Login"
+            on_press: root.login(username.text, password.text)
+
+        Button:
+            text: "Go to Register"
+            on_press: app.root.current = "register_screen"
+
+<RegisterScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 10
+        spacing: 10
+
+        Label:
+            text: "Register"
+            font_size: 24
+
+        TextInput:
+            id: username
+            hint_text: "Username"
+            multiline: False
+
+        TextInput:
+            id: email
+            hint_text: "Email"
+            multiline: False
+
+        TextInput:
+            id: password
+            hint_text: "Password"
+            password: True
+            multiline: False
+
+        Button:
+            text: "Register"
+            on_press: root.register(username.text, email.text, password.text)
+
+        Button:
+            text: "Go to Login"
+            on_press: app.root.current = "login_screen"
+
+<ProfileScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            text: "Welcome, [b]{username}[/b]".format(username=root.username)
+            markup: True
+        Button:
+            text: "Logout"
+            on_press: app.root.current = "login_screen"

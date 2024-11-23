@@ -1,0 +1,26 @@
+<NovelManagementScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: dp(10)
+        padding: dp(20)
+
+        Label:
+            text: "Manage Your Novels"
+            font_size: '24sp'
+
+        Button:
+            text: "Upload Novel"
+            on_release: print("Upload Novel")
+        
+        Button:
+            text: "View All Novels"
+            on_release: print("View Novels")
+        
+        Button:
+            text: "Update Novel"
+            on_release: print("Update Novel")
+        
+        Button:
+            text: "Back"
+            on_release: app.root.current = "profile_screen"
+s

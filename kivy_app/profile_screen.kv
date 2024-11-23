@@ -1,0 +1,26 @@
+<ProfileScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: dp(10)
+        padding: dp(20)
+
+        Label:
+            text: "Welcome, [b]{username}[/b]".format(username=root.username)
+            font_size: '20sp'
+            markup: True
+
+        Button:
+            text: "View Novels"
+            on_release: app.root.current = "novel_management_screen"
+        
+        Button:
+            text: "Wishlist"
+            on_release: app.root.current = "wishlist_screen"
+        
+        Button:
+            text: "Comments"
+            on_release: app.root.current = "comments_screen"
+        
+        Button:
+            text: "Logout"
+            on_release: app.root.current = "login_screen"

@@ -1,0 +1,21 @@
+<CommentsScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: dp(10)
+        padding: dp(20)
+
+        Label:
+            text: "Comments"
+            font_size: '24sp'
+
+        TextInput:
+            hint_text: "Write a comment"
+            multiline: True
+        
+        Button:
+            text: "Post Comment"
+            on_release: print("Comment Posted")
+
+        Button:
+            text: "Back"
+            on_release: app.root.current = "profile_screen"
