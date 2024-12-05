@@ -71,7 +71,8 @@ def create_tables():
     cursor = db.cursor()
 
     # Create the 'users' table
-    cursor.execute("""CREATE TABLE IF NOT EXISTS users (
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
             email TEXT UNIQUE NOT NULL,
@@ -80,7 +81,8 @@ def create_tables():
     """)
 
     # Create the 'novels' table
-    cursor.execute("""CREATE TABLE IF NOT EXISTS novels (
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS novels (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
             description TEXT,
@@ -91,7 +93,8 @@ def create_tables():
     """)
 
     # Create the 'likes' table
-    cursor.execute("""CREATE TABLE IF NOT EXISTS likes (
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS likes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             novel_id INTEGER,
             user_id INTEGER,
@@ -101,7 +104,8 @@ def create_tables():
     """)
 
     # Create the 'comments' table
-    cursor.execute("""CREATE TABLE IF NOT EXISTS comments (
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS comments (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             novel_id INTEGER,
             user_id INTEGER,
@@ -112,7 +116,8 @@ def create_tables():
     """)
 
     # Create the 'wishlists' table
-    cursor.execute("""CREATE TABLE IF NOT EXISTS wishlists (
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS wishlists (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             novel_id INTEGER,
             user_id INTEGER,
@@ -129,7 +134,7 @@ def on_startup():
     create_tables()
 
 # User registration endpoint
-@app.post("/users/", tags=["User Management"])
+@app.post("/users/")
 def create_user(user: UserCreate):
     db = get_db()
     cursor = db.cursor()
@@ -144,7 +149,7 @@ def create_user(user: UserCreate):
 
     return {"msg": "User created successfully"}
 
-@app.post("/login/", tags=["User Management"])
+@app.post("/login/")
 def login_user(username:str,password:str):
     db = None
     try:
@@ -179,7 +184,7 @@ def login_user(username:str,password:str):
         if db:
             db.close()
 
-@app.post("/novels/", tags=["Novel Management"])
+@app.post("/novels/")
 def upload_novel(novel: NovelCreate, token:str):
     print('got the token',token)
     user_id = verify_token(token)
@@ -194,7 +199,7 @@ def upload_novel(novel: NovelCreate, token:str):
 
     return {"msg": "Novel uploaded successfully"}
 
-@app.post("/novels/like/", tags=["Novel Management"])
+@app.post("/novels/like/")
 def like_novel(like: LikeCreate, token: Optional[str] = None):
     user_id = verify_token(token)
 
@@ -208,7 +213,7 @@ def like_novel(like: LikeCreate, token: Optional[str] = None):
 
     return {"msg": "Liked the novel"}
 
-@app.post("/novels/comment/", tags=["Novel Management"])
+@app.post("/novels/comment/")
 def comment_novel(comment: CommentCreate, token: Optional[str] = None):
     user_id = verify_token(token)
 
@@ -222,7 +227,7 @@ def comment_novel(comment: CommentCreate, token: Optional[str] = None):
 
     return {"msg": "Comment added"}
 
-@app.post("/wishlist/", tags=["Novel Management"])
+@app.post("/wishlist/")
 def add_to_wishlist(wishlist: WishListCreate, token: Optional[str] = None):
     user_id = verify_token(token)
 
@@ -236,7 +241,7 @@ def add_to_wishlist(wishlist: WishListCreate, token: Optional[str] = None):
 
     return {"msg": "Added to wishlist"}
 
-@app.get("/novels/{novel_id}/download/", tags=["Novel Management"])
+@app.get("/novels/{novel_id}/download/")
 def download_novel(novel_id: int):
     db = get_db()
     cursor = db.cursor()
@@ -250,7 +255,7 @@ def download_novel(novel_id: int):
 
     return novel
 
-@app.put("/novels/{novel_id}/", tags=["Novel Management"])
+@app.put("/novels/{novel_id}/")
 def update_novel(novel_id: int, novel: NovelCreate, token: Optional[str] = None):
     user_id = verify_token(token)
 
@@ -265,7 +270,7 @@ def update_novel(novel_id: int, novel: NovelCreate, token: Optional[str] = None)
 
     return {"msg": "Novel updated successfully"}
 
-@app.delete("/novels/{novel_id}/", tags=["Novel Management"])
+@app.delete("/novels/{novel_id}/")
 def delete_novel(novel_id: int, token: Optional[str] = None):
     user_id = verify_token(token)
 
@@ -279,7 +284,7 @@ def delete_novel(novel_id: int, token: Optional[str] = None):
 
     return {"msg": "Novel deleted successfully"}
 
-@app.get("/users/{user_id}/novels/", tags=["User Management"])
+@app.get("/users/{user_id}/novels/")
 def get_user_novels(user_id: int):
     db = get_db()
     cursor = db.cursor()
@@ -290,7 +295,7 @@ def get_user_novels(user_id: int):
 
     return novels
 
-@app.get("/novels/", tags=["Novel Management"])
+@app.get("/novels/")
 def get_all_novels():
     db = get_db()
     cursor = db.cursor()
@@ -301,7 +306,7 @@ def get_all_novels():
 
     return novels
 
-@app.get("/novels/{novel_id}/", tags=["Novel Management"])
+@app.get("/novels/{novel_id}/")
 def get_novel_details(novel_id: int):
     db = get_db()
     cursor = db.cursor()
@@ -315,23 +320,26 @@ def get_novel_details(novel_id: int):
 
     return novel
 
-@app.put("/users/{user_id}/", tags=["User Management"])
-def update_user_profile(user_id: int, profile: ProfileUpdate, token: Optional[str] = None):
-    verify_token(token)
+@app.put("/users/profile/")
+def update_profile(profile: ProfileUpdate, token: Optional[str] = None):
+    user_id = verify_token(token)
 
     db = get_db()
     cursor = db.cursor()
 
-    cursor.execute("UPDATE users SET username = ?, email = ?, password = ? WHERE id = ?", 
-                   (profile.username, profile.email, bcrypt.hashpw(profile.password.encode('utf-8'), bcrypt.gensalt()), user_id))
+    # Hash the new password if it is provided
+    hashed_password = bcrypt.hashpw(profile.password.encode('utf-8'), bcrypt.gensalt()) if profile.password else None
+
+    query = "UPDATE users SET username = ?, email = ?, password = ? WHERE id = ?"
+    cursor.execute(query, (profile.username, profile.email, hashed_password, user_id))
     db.commit()
     db.close()
 
-    return {"msg": "User profile updated successfully"}
+    return {"msg": "Profile updated successfully"}
 
-@app.delete("/users/{user_id}/", tags=["User Management"])
-def delete_user(user_id: int, token: Optional[str] = None):
-    verify_token(token)
+@app.delete("/users/")
+def delete_user(token: Optional[str] = None):
+    user_id = verify_token(token)
 
     db = get_db()
     cursor = db.cursor()
@@ -340,4 +348,74 @@ def delete_user(user_id: int, token: Optional[str] = None):
     db.commit()
     db.close()
 
-    return {"msg": "User deleted successfully"}
+    return {"msg": "User deleted"}
+
+@app.get("/users/{user_id}/")
+def get_user_details(user_id: int):
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))
+    user = cursor.fetchone()
+    db.close()
+
+    return user
+
+@app.get("/novels/{novel_id}/likes/")
+def get_novel_likes(novel_id: int):
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute("SELECT COUNT(*) AS likes FROM likes WHERE novel_id = ?", (novel_id,))
+    likes = cursor.fetchone()
+    db.close()
+
+    return likes
+
+@app.get("/novels/{novel_id}/comments/")
+def get_novel_comments(novel_id: int):
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute("SELECT * FROM comments WHERE novel_id = ?", (novel_id,))
+    comments = cursor.fetchall()
+    db.close()
+
+    return comments
+
+@app.get("/users/{user_id}/wishlist/")
+def get_user_wishlist(user_id: int):
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute("SELECT novels.* FROM wishlists JOIN novels ON wishlists.novel_id = novels.id WHERE wishlists.user_id = ?", (user_id,))
+    wishlist = cursor.fetchall()
+    db.close()
+
+    return wishlist
+
+@app.delete("/wishlist/{novel_id}/")
+def remove_from_wishlist(novel_id: int, token: Optional[str] = None):
+    user_id = verify_token(token)
+
+    db = get_db()
+    cursor = db.cursor()
+
+    cursor.execute("DELETE FROM wishlists WHERE novel_id = ? AND user_id = ?", (novel_id, user_id))
+    db.commit()
+    db.close()
+
+    return {"msg": "Novel removed from wishlist"}
+
+@app.get("/novels/search/")
+def search_novels(title: str):
+    db = get_db()
+    cursor = db.cursor()
+
+    query = "SELECT * FROM novels WHERE title LIKE ?"
+    cursor.execute(query, ('%' + title + '%',))
+    novels = cursor.fetchall()
+    db.close()
+
+    return novels
+
